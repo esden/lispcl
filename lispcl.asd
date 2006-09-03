@@ -107,7 +107,7 @@
 (in-package "LISPCL")
 
 ; lispcl version
-; development: nil
+; development: "svn-version"
 ; stable: string (is set by the script make-release)
 (defparameter *lispcl-version* "svn-version")
 
