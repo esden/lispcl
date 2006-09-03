@@ -112,7 +112,7 @@
   ; connect to proxies
   (connect-to-accepted-proxies)
   ; set data handlers
-  ;(add-data-handler (p2dp-get 0) *player-position2d-data-state* #'test-data-handler)
+  ;(set-data-handler (p2dp-get 0) *player-position2d-data-state* #'test-data-handler)
   ; request first round of data
   (request-data (get-player-proxy *test-pc*))
   *test-pc*)
@@ -136,10 +136,6 @@
 ;; *****************************************************************************
 ;; ** test data handlers                                                      **
 ;; *****************************************************************************
-
-; add data handler
-(defmethod add-data-handler ((proxy std-proxy) data-code data-handler-fun)
-  (setf (gethash data-code (data-handlers proxy)) data-handler-fun))
 
 ; test data handler
 (defmethod test-data-handler ((proxy std-proxy) (data player-standard-object))
@@ -175,6 +171,10 @@
 (defun p3dp-get (&optional (index 0))
   (get-proxy *test-pc* *player-position3d-code* index))
 
+; get ptz proxy
+(defun ptzp-get (&optional (index 0))
+  (get-proxy *test-pc* *player-ptz-code* index))
+
 ; get sonar proxy
 (defun sp-get (&optional (index 0))
   (get-proxy *test-pc* *player-sonar-code* index))
@@ -201,29 +201,24 @@
     (make-instance 'position2d-proxy :player-client pc :index 0)
     ; connect to sonar proxy
     (let ( (sp (make-instance 'sonar-proxy :player-client pc :index 0)) )
+      ; set sonar data handler
+      (set-data-handler sp *player-sonar-data-ranges* #'space-wanderer-sonar-data-handler)
       ; run controller either threaded or non-threaded
       (cond ( threaded
               ; set global variable, so we can use pc-test-stop
               (setf *test-pc* pc)
-              ; add data handler
-              (add-data-handler sp *player-sonar-data-ranges* #'space-wanderer-sonar-data-handler)
               ; request first round of data (read thread will continue)
               (request-data (get-player-proxy pc)) )
             ( T
               ; initial timestamps
-              (let ( (initial-player-server-timestamp (timestamp pc))
-                     (sp-timestamp 0.0) )
+              (let ( (initial-player-server-timestamp (timestamp pc)) )
                 ; main loop
                 (loop
                   ; check timeout
                   (when (>= (- (timestamp pc) initial-player-server-timestamp) timeout)
                     (return))
-                  ; read a round of data
+                  ; read a round of data (if new sonar data arrives, the handler will automatically called)
                   (read-data pc)
-                  ; react to new sonar data
-                  (when (> (timestamp sp) sp-timestamp)
-                    (setf sp-timestamp (timestamp sp))
-                    (space-wanderer-sonar-data-handler sp (get-data sp *player-sonar-data-ranges*)))
                   ; sleep the given time
                   (sleep sleep-time))
                 ; disconnect (all proxies will also be disconnected)
@@ -388,35 +383,25 @@
     ; connect to sonar proxy
     (let ( (sp (make-instance 'sonar-proxy :player-client pc :index 0))
            (bp (make-instance 'blobfinder-proxy :player-client pc :index 0)) )
+      ; set data handlers
+      (set-data-handler sp *player-sonar-data-ranges* #'space-wanderer-sonar-data-handler)
+      (set-data-handler bp *player-blobfinder-data-blobs* #'blob-finder-data-handler)
       ; run controller either threaded or non-threaded
       (cond ( threaded
               ; set global variable, so we can use pc-test-stop
               (setf *test-pc* pc)
-              ; add data handlers
-              (add-data-handler sp *player-sonar-data-ranges* #'space-wanderer-sonar-data-handler)
-              (add-data-handler bp *player-blobfinder-data-blobs* #'blob-finder-data-handler)
               ; request first round of data (read thread will continue)
               (request-data (get-player-proxy pc)) )
             ( T
               ; initial timestamps
-              (let ( (initial-player-server-timestamp (timestamp pc))
-                     (sp-timestamp 0.0)
-                     (bp-timestamp 0.0) )
+              (let ( (initial-player-server-timestamp (timestamp pc)) )
                 ; main loop
                 (loop
                   ; check timeout
                   (when (>= (- (timestamp pc) initial-player-server-timestamp) timeout)
                     (return))
-                  ; read a round of data
+                  ; read a round of data (data handlers if new sonar or blobfinder data arrives will automatically called)
                   (read-data pc)
-                  ; react to new sonar data
-                  (when (> (timestamp sp) sp-timestamp)
-                    (setf sp-timestamp (timestamp sp))
-                    (space-wanderer-sonar-data-handler sp (get-data sp *player-sonar-data-ranges*)))
-                  ; react to new blobfinder data
-                  (when (> (timestamp bp) bp-timestamp)
-                    (setf bp-timestamp (timestamp bp))
-                    (blob-finder-data-handler bp (get-data bp *player-blobfinder-data-blobs*)))
                   ; sleep the given time
                   (sleep sleep-time))
                 ; disconnect (all proxies will also be disconnected)

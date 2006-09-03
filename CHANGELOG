@@ -1,0 +1,11 @@
+2006-09-03 Armin Mueller
+  Initial release of LISPCL (LISP Player Client)
+  
+  LISPCL is a Lisp client for the Player project. It is written completeley in 
+  Lisp and doesn't make use of any C library. The implementation supports all 
+  interfaces of Player 2.x, except the deprecated ones. For the interfaces 
+  blobfinder, laser, planner, position2d, position3d, ptz, and sonar wrapper 
+  methods for sending commands and requests are provided. The other interfaces 
+  are supported by the direct usage of the methods proxy-command and 
+  proxy-request. The supported Lisp implementations are AllegroCL, CMUCL, SBCL,
+  and CLISP. Threads are supported for AllegroCL and CMUCL.

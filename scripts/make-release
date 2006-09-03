@@ -1,0 +1,67 @@
+#!/bin/bash
+
+### ---------------------------------------------------------------------------- ###
+###  LISCPL - Lisp Player Client - make-release                                  ###
+###  Copyright (C) 2006, Armin Mueller                                           ###
+###                                                                              ###
+###  This program is free software; you can redistribute it and/or modify        ###
+###  it under the terms of the GNU General Public License as published by        ###
+###  the Free Software Foundation; either version 2 of the License, or           ###
+###  (at your option) any later version.                                         ###
+###                                                                              ###
+###  This program is distributed in the hope that it will be useful,             ###
+###  but WITHOUT ANY WARRANTY; without even the implied warranty of              ###
+###  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               ###
+###  GNU General Public License for more details.                                ###
+###                                                                              ###
+###  You should have received a copy of the GNU General Public License           ###
+###  along with this program; if not, write to the Free Software                 ###
+###  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA   ###
+### ---------------------------------------------------------------------------- ###
+
+# usage
+usage ()
+{
+  echo "Usage: `basename $0` release-version"
+  exit 1
+}
+
+# if no argument
+if [ $# -lt 1 ]; then
+  usage
+fi
+
+version="$1"
+dir="lispcl-${version}"
+rootdir="${0%/*}/.."
+
+# remove old directory
+if [ -d "${dir}" ]; then
+  rm -rf "${dir}"
+fi
+
+# debug
+set -x
+
+# export files
+svn export "${rootdir}" "${dir}"
+
+# remove make-release script
+rm "${dir}/scripts/make-release"
+
+# copy generated files
+(cd "${rootdir}/src" && make)
+cp -p "${rootdir}/src/constants-player.lisp" "${dir}/src"
+cp -p "${rootdir}/src/xdr-player.lisp" "${dir}/src"
+cp -p "${rootdir}/src/proxies-player.lisp" "${dir}/src"
+
+# add release information
+sed -i "s/\"svn-version\"/\"${version}\"/" "${dir}/lispcl.asd"
+sed -i "s/\"svn-version\"/\"${version}\"/" "${dir}/lispcl-test.asd"
+
+# pack everything
+tar czf "${dir}.tar.gz" "${dir}"
+
+# remove directory
+rm -rf "${dir}"
+

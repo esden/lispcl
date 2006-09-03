@@ -25,13 +25,13 @@
 (defclass player-client ()
   ( (connection
       :type stream
-      :documentation "The connection stream to the Player server")
+      :documentation "The connection stream to the Player server.")
     (xdr-stream
       :type xdr-stream
-      :documentation "The connection stream wrapped as xdr-strem")
+      :documentation "The connection stream wrapped as xdr-strem.")
     (read-thread
       :initform nil
-      :documentation "Thread performing read operations in threaded mode")
+      :documentation "Thread performing read operations in threaded mode.")
     (pull-mode
       :type boolean
       :initform nil
@@ -59,10 +59,10 @@
       :reader timestamp
       :initform 0.0
       :type float
-      :documentation "The latest time the server sent a message")
+      :documentation "The latest time the server sent a message.")
     (proxies
       :initform nil
-      :documentation "list of proxies associated with us") )
+      :documentation "List of proxies associated with us.") )
   (:documentation "One player-client object is used to control each connection to a Player server."))
 
 ; print object player-client
@@ -85,7 +85,7 @@
       :initarg :devaddr
       :reader devaddr
       :type player-devaddr
-      :documentation "device address")
+      :documentation "Device address of proxy.")
     (request-status
       :reader request-status
       :initform :none
@@ -98,7 +98,7 @@
     (response-header
       :reader response-header
       :type player-msghdr
-      :documentation "last response header received") )
+      :documentation "Last response header received.") )
   (:documentation
     "Base Proxy class for all proxies"))
 

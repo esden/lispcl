@@ -52,6 +52,9 @@
     ; position3d-proxy
     "SET-VELOCITY" "SET-POSE"
     "GET-GEOMETRY" "SET-MOTOR-STATE"
+    ; ptz-proxy
+    "SET-PTZ"
+    "GET-GEOMETRY" "SET-CONTROL-MODE"
     ; sonar-proxy
     "GET-GEOMETRY" "SET-POWER-STATE"))
 
@@ -87,14 +90,15 @@
 
 ; operation-done-p
 (defmethod operation-done-p ((o compile-op) (c run-make))
-  (let ( (path (directory-namestring (component-pathname c))) )
-    #+allegro (excl:run-shell-command (vector "make" "make" "--quiet" "-C" path) :output *standard-output*)
-    #+cmu (ext:run-program "make" (list "--quiet" "-C" path) :output *standard-output*)
-    #+sbcl (sb-ext:run-program "/usr/bin/make" (list "--quiet" "-C" path) :output *standard-output*)
-    #+clisp (ext:run-program "make" :arguments (list "--quiet" "-C" path))
-    #-(or allegro cmu sbcl clisp)
-      (format T "Can't run 'make' from lisp. Please run make from the command line in ~a~%" path)
-    T))
+  (when (string= (subseq lispcl::*lispcl-version* 0 3) "svn")
+    (let ( (path (directory-namestring (component-pathname c))) )
+      #+allegro (excl:run-shell-command (vector "make" "make" "--quiet" "-C" path) :output *standard-output*)
+      #+cmu (ext:run-program "make" (list "--quiet" "-C" path) :output *standard-output*)
+      #+sbcl (sb-ext:run-program "/usr/bin/make" (list "--quiet" "-C" path) :output *standard-output*)
+      #+clisp (ext:run-program "make" :arguments (list "--quiet" "-C" path))
+      #-(or allegro cmu sbcl clisp)
+        (format T "Can't run 'make' from lisp. Please run make from the command line in ~a~%" path)))
+  T)
 
 ;; *****************************************************************************
 ;; ** lisp player client library                                              **
@@ -102,15 +106,20 @@
 
 (in-package "LISPCL")
 
+; lispcl version
+; development: nil
+; stable: string (is set by the script make-release)
+(defparameter *lispcl-version* "svn-version")
+
 ; asdf definition
 (asdf:defsystem lispcl
-  :name "Lisp player client library"
-  :author "Armin Mueller <muellear@in.tum.de>"
-  :version "0.1"
-  :maintainer "Armin Mueller <muellear@in.tum.de>"
-  :licence "unknown"
-  :description "Lisp player client library"
-  :long-description "Lisp player client library for the player project"
+  :name "Lisp player client"
+  :author "Armin Mueller <armin-mueller@users.sourceforge.net>"
+  :version "svn-version"
+  :maintainer "Armin Mueller <armin-mueller@users.sourceforge.net>"
+  :licence "GPL v2 or higher"
+  :description "Lisp player client"
+  :long-description "Lisp player client for the Player Project"
 
   :components
   ( (:module "src"
@@ -134,5 +143,6 @@
         (:file "proxy-planner" :depends-on ("proxies-player"))
         (:file "proxy-position2d" :depends-on ("proxies-player"))
         (:file "proxy-position3d" :depends-on ("proxies-player"))
+        (:file "proxy-ptz" :depends-on ("proxies-player"))
         (:file "proxy-sonar" :depends-on ("proxies-player")) )) ))
 

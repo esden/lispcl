@@ -1,0 +1,1 @@
+LISPCL is a Lisp client for the Player project. The implementation supports all interfaces of Player 2.x, except the deprecated ones. Please refer to the online documentation (http://lisp-player.sourceforge.net/documentation.php) for more detail, installation, and some examples.
