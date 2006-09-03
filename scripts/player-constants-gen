@@ -1,0 +1,89 @@
+#!/bin/bash
+
+### ---------------------------------------------------------------------------- ###
+###  LISCPL - Lisp Player Client - player-constants-gen                          ###
+###  Copyright (C) 2006, Armin Mueller                                           ###
+###                                                                              ###
+###  This program is free software; you can redistribute it and/or modify        ###
+###  it under the terms of the GNU General Public License as published by        ###
+###  the Free Software Foundation; either version 2 of the License, or           ###
+###  (at your option) any later version.                                         ###
+###                                                                              ###
+###  This program is distributed in the hope that it will be useful,             ###
+###  but WITHOUT ANY WARRANTY; without even the implied warranty of              ###
+###  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               ###
+###  GNU General Public License for more details.                                ###
+###                                                                              ###
+###  You should have received a copy of the GNU General Public License           ###
+###  along with this program; if not, write to the Free Software                 ###
+###  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA   ###
+### ---------------------------------------------------------------------------- ###
+
+# usage
+usage ()
+{
+  echo "Usage: `basename $0` header-file output-file"
+  exit 1
+}
+
+# if no argument
+if [ $# -lt 2 ]; then
+  usage
+fi
+
+# init options
+header_file="${1}"
+output_file="${2}"
+
+# gpl header
+cat > ${output_file} <<EOF
+;;; ---------------------------------------------------------------------------- ;;;
+;;;  LISCPL - Lisp Player Client - ${output_file}                         ;;;
+;;;  Copyright (C) 2006, Armin Mueller                                           ;;;
+;;;                                                                              ;;;
+;;;  This program is free software; you can redistribute it and/or modify        ;;;
+;;;  it under the terms of the GNU General Public License as published by        ;;;
+;;;  the Free Software Foundation; either version 2 of the License, or           ;;;
+;;;  (at your option) any later version.                                         ;;;
+;;;                                                                              ;;;
+;;;  This program is distributed in the hope that it will be useful,             ;;;
+;;;  but WITHOUT ANY WARRANTY; without even the implied warranty of              ;;;
+;;;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               ;;;
+;;;  GNU General Public License for more details.                                ;;;
+;;;                                                                              ;;;
+;;;  You should have received a copy of the GNU General Public License           ;;;
+;;;  along with this program; if not, write to the Free Software                 ;;;
+;;;  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA   ;;;
+;;; ---------------------------------------------------------------------------- ;;;
+
+EOF
+
+# package definitions
+echo -e "(in-package \"LISPCL\")\n" >> ${output_file}
+
+# constants
+gawk '/^\#define +[^ ]+ +[^ ]+/ { printf("(defparameter *%s* %s)\n", tolower($2), $3); }' "${header_file}" | \
+  tr '_' '-' | \
+  egrep -v '(player-max-payload-size|player-ident-string|player-audio-command-buffer-size|player-camera-image-size|mcom-command-buffer-size)' | \
+  sed 's/0x0//' >> ${output_file}
+
+# special constants
+cat >> ${output_file} << EOF
+(defparameter *player-msghdr-size* 40)
+(defparameter *player-max-payload-size* (- *player-max-message-size* *player-msghdr-size*))
+(defparameter *player-ident-string* "Player v.")
+(defparameter *player-audio-command-buffer-size* (* 3 2))
+(defparameter *player-camera-image-size* (* *player-camera-image-width* *player-camera-image-height* 4))
+EOF
+
+echo >> ${output_file}
+
+# exports
+echo "(eval-when (:compile-toplevel :load-toplevel :execute)" >> ${output_file}
+echo -n "  (export '(" >> ${output_file}
+gawk '/^\#define +[^ ]+ +[^ ]+/ { printf("\n    *%s*", tolower($2)); }' "${header_file}" | \
+  tr '_' '-' >> ${output_file}
+echo ")))" >> ${output_file}
+
+echo >> ${output_file}
+

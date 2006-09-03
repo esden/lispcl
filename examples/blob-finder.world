@@ -1,0 +1,57 @@
+# defines Pioneer-like robots
+include "pioneer.inc"
+
+# defines 'map' object used for floorplans
+include "map.inc"
+
+# size of the world in meters
+size [12 12]
+
+# set the resolution of the underlying raytrace model in meters
+resolution 0.02
+
+# configure the GUI window
+window ( size [ 600.000 600.000 ] center [0 0] scale 0.02 )
+
+# load an environment bitmap
+map
+(
+  bitmap "bitmaps/blob-finder.png"
+  size [12 12]
+)
+
+# create a robot
+pioneer2dx
+(
+  name "robot1"
+  color "red"
+  pose [0 -5 0]
+
+  ptz (
+    ptz [0 0 180.0]
+    blobfinder
+    (
+      channel_count 3
+      channels [ "red" "green" "blue" ]
+      range_max 5
+    )
+  )
+)
+
+model (
+  size [ 1 1 ]
+  pose [ 0 0 0 ]
+  color "red"
+)
+
+model (
+  size [ 1 1 ]
+  pose [ -2.5 -2.5 0 ]
+  color "green"
+)
+
+model (
+  size [ 1 1 ]
+  pose [ 2.5 2.5 0 ]
+  color "blue"
+)
