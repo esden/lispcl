@@ -107,8 +107,7 @@
 (in-package "LISPCL")
 
 ; lispcl version
-; development: "svn-version"
-; stable: string (is set by the script make-release)
+; for stable releases the string is set by the script make-release
 (defparameter *lispcl-version* "svn-version")
 
 ; asdf definition
