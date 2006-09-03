@@ -58,6 +58,12 @@
     ; sonar-proxy
     "GET-GEOMETRY" "SET-POWER-STATE"))
 
+(in-package "LISPCL")
+
+; lispcl version
+; for stable releases the string is set by the script make-release
+(defparameter *lispcl-version* "svn-version")
+
 ;; *****************************************************************************
 ;; ** asdf definitions                                                        **
 ;; *****************************************************************************
@@ -105,10 +111,6 @@
 ;; *****************************************************************************
 
 (in-package "LISPCL")
-
-; lispcl version
-; for stable releases the string is set by the script make-release
-(defparameter *lispcl-version* "svn-version")
 
 ; asdf definition
 (asdf:defsystem lispcl
