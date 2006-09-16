@@ -29,15 +29,15 @@
   (defmethod set-ptz ((ptz ptz-proxy) &key (pan 0.0 pp) (tilt 0.0 tp) (zoom 1.309 zp)
                                            (panspeed 0.0 psp) (tiltspeed 0.0 tsp)
                                       &allow-other-keys)
-    (when pp
+    (when (and pp (numberp pan))
       (setf (player-pan cmd-state) pan))
-    (when tp
+    (when (and tp (numberp tilt))
       (setf (player-tilt cmd-state) tilt))
-    (when zp
+    (when (and zp (numberp zoom))
       (setf (player-zoom cmd-state) zoom))
-    (when psp
+    (when (and psp (numberp panspeed))
       (setf (player-panspeed cmd-state) panspeed))
-    (when tsp
+    (when (and tsp (numberp tiltspeed))
       (setf (player-tiltspeed cmd-state) tiltspeed))
     (proxy-command ptz *player-ptz-cmd-state* cmd-state))
 
