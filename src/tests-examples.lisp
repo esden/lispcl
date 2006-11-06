@@ -151,6 +151,10 @@
 (defun pc-get ()
   *test-pc*)
 
+; get actarray proxy
+(defun ap-get (&optional (index 0))
+  (get-proxy *test-pc* *player-actarray-code* index))
+
 ; get blobfinder proxy
 (defun bp-get (&optional (index 0))
   (get-proxy *test-pc* *player-blobfinder-code* index))
