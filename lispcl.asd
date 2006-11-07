@@ -27,6 +27,8 @@
   (:use "COMMON-LISP" "COMMON-LISP-USER")
   (:export
     ; constants
+    ; utiltities
+    "NIL-T->0-1"
     ; threads
     "WAIT-FOR-INPUT"
     ; player-client
@@ -37,6 +39,9 @@
     "GET-DEVICE-LIST" "GET-DRIVER-INFO" "REQUEST-DEVICE-ACCESS" "REQUEST-DATA" "SET-DATAMODE" "SET-REPLACE-RULE"
     ; std-proxy
     "GET-DATA"
+    ; actarray-proxy
+    "SET-POSITION" "SET-VELOCITY" "SET-CURRENT"
+    "SET-MOTOR-STATE"
     ; blobfinder-proxy
     "SET-TRACKING-COLOR" "SET-IMAGER-PARAMS"
     ; laser-proxy
@@ -139,6 +144,7 @@
         (:file "proxy-player" :depends-on ("proxy--base"))
         (:file "proxy--std" :depends-on ("proxy-player"))
         (:file "proxies-player" :depends-on ("proxy--std"))
+        (:file "proxy-actarray" :depends-on ("proxies-player"))
         (:file "proxy-blobfinder" :depends-on ("proxies-player"))
         (:file "proxy-laser" :depends-on ("proxies-player"))
         (:file "proxy-planner" :depends-on ("proxies-player"))
