@@ -27,10 +27,14 @@
   (:use "COMMON-LISP" "COMMON-LISP-USER")
   (:export
     ; constants
+    ; definitions-1
+    "PLAYER-STANDARD-OBJECT"
     ; utiltities
     "NIL-T->0-1"
     ; threads
     "WAIT-FOR-INPUT"
+    ; xdr
+    "MAKE-XDR-STREAM" "XDR-READ" "XDR-WRITE"
     ; player-client
     "PLAYER-CLIENT" "TIMESTAMP" "CONNECTION" "DISCONNECT" "GET-PLAYER-PROXY" "GET-PROXY" "PULL-MODE-P"
     "READ-MESSAGE" "READ-DATA"
