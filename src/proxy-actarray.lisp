@@ -83,3 +83,21 @@
   (proxy-request ap *player-actarray-power-req*
     (make-instance 'player-actarray-power-config :value (nil-t->0-1-int state))))
 
+;; ** set brakes state                                                        **
+(defmethod set-brakes-state ((ap actarray-proxy) state &key &allow-other-keys)
+  "Set brakes"
+  (proxy-request ap *player-actarray-brakes-req*
+    (make-instance 'player-actarray-brakes-config :value (nil-t->0-1-int state))))
+
+;; ** set velocity param                                                      **
+(defmethod set-velocity-param ((ap actarray-proxy) joint velocity &key &allow-other-keys)
+  "Set velocity param"
+  (proxy-request ap *player-actarray-speed-req*
+    (make-instance 'player-actarray-speed-config :joint joint :speed velocity)))
+
+;; ** set acceleration param                                                  **
+(defmethod set-acceleration-param ((ap actarray-proxy) joint acceleration &key &allow-other-keys)
+  "Set velocity param"
+  (proxy-request ap *player-actarray-accel-req*
+    (make-instance 'player-actarray-accel-config :joint joint :accel acceleration)))
+

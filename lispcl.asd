@@ -45,7 +45,7 @@
     "GET-DATA"
     ; actarray-proxy
     "SET-POSITION" "SET-VELOCITY" "SET-CURRENT"
-    "SET-MOTOR-STATE"
+    "SET-MOTOR-STATE" "SET-BRAKES-STATE" "SET-VELOCITY-PARAM" "SET-ACCELERATION-PARAM"
     ; blobfinder-proxy
     "SET-TRACKING-COLOR" "SET-IMAGER-PARAMS"
     ; laser-proxy
