@@ -64,13 +64,14 @@ echo -e "(in-package \"LISPCL\")\n" >> ${output_file}
 # constants
 gawk '/^\#define +[^ ]+ +[^ ]+/ { printf("(defparameter *%s* %s)\n", tolower($2), $3); }' "${header_file}" | \
   tr '_' '-' | \
-  egrep -v '(player-max-payload-size|player-ident-string|player-audio-command-buffer-size|player-camera-image-size|mcom-command-buffer-size)' | \
+  egrep -v '(player-max-payload-size|player-map-max-tile-size|player-ident-string|player-audio-command-buffer-size|player-camera-image-size|mcom-command-buffer-size)' | \
   sed 's/0x0//' >> ${output_file}
 
 # special constants
 cat >> ${output_file} << EOF
 (defparameter *player-msghdr-size* 40)
 (defparameter *player-max-payload-size* (- *player-max-message-size* *player-msghdr-size*))
+(defparameter *player-map-max-tile-size* (- (floor (/ (- *player-max-payload-size* 12) 1.001)) 20 1))
 (defparameter *player-ident-string* "Player v.")
 (defparameter *player-audio-command-buffer-size* (* 3 2))
 (defparameter *player-camera-image-size* (* *player-camera-image-width* *player-camera-image-height* 4))

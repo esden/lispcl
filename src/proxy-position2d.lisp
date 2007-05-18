@@ -40,9 +40,11 @@
 
     ;; ** set pose                                                            **
     (defmethod set-pose ((pp position2d-proxy) &key (x 0.0) (y 0.0) (az 0.0)
+                                                    (vx 0.0) (vy 0.0) (vaz 0.0)
                                                     (state T)
                                                &allow-other-keys)
       (update-pos-vel (player-pos pos-cmd) x y az)
+      (update-pos-vel (player-vel pos-cmd) vx vy vaz)
       (setf (player-state pos-cmd) (if state 1 0))
       (proxy-command pp *player-position2d-cmd-pos* pos-cmd))
 

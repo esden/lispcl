@@ -41,7 +41,7 @@
 ;; ** requests                                                                **
 ;; *****************************************************************************
 
-;; ** get waypints                                                            **
+;; ** get waypoints                                                           **
 (defmethod get-waypoints ((pp planner-proxy))
   "Get waypoints"
   (proxy-request pp *player-planner-req-get-waypoints* nil
