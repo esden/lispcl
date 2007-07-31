@@ -50,6 +50,8 @@
     "SET-TRACKING-COLOR" "SET-IMAGER-PARAMS"
     ; laser-proxy
     "GET-GEOMETRY" "SET-POWER-STATE"
+    ; limb-proxy
+    "SET-HOME" "SET-POSE" "SET-POSE-EULER" "SET-POSE-PAO"
     ; planner-proxy
     "SET-GOAL"
     "GET-WAYPOINTS" "SET-ENABLED"
@@ -151,6 +153,7 @@
         (:file "proxy-actarray" :depends-on ("proxies-player"))
         (:file "proxy-blobfinder" :depends-on ("proxies-player"))
         (:file "proxy-laser" :depends-on ("proxies-player"))
+        (:file "proxy-limb" :depends-on ("proxies-player"))
         (:file "proxy-planner" :depends-on ("proxies-player"))
         (:file "proxy-position2d" :depends-on ("proxies-player"))
         (:file "proxy-position3d" :depends-on ("proxies-player"))

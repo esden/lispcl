@@ -89,6 +89,31 @@
 (defmacro throw-warn (source datum &rest arguments)
   `(warn (concatenate 'string "[" ,source "] " ,datum) ,@arguments))
 
+;; *********************************************************************************
+;; ***** orientation operations                                                *****
+;; *********************************************************************************
+
+; quaternion->euler
+(defun quaternion->euler (qu qx qy qz)
+  "convert a quaternion to euler angles"
+  (values
+    (atan (* 2 (+ (* qy qz) (* qu qx))) (+ (* qu qu) (* -1 qx qx) (* -1 qy qy) (* qz qz)))
+    (asin (max -1.0 (min 1.0 (* -2 (- (* qx qz) (* qu qy))))))
+    (atan (* 2 (+ (* qx qy) (* qu qz))) (+ (* qu qu) (* qx qx) (* -1 qy qy) (* -1 qz qz)))))
+
+; euler->quaternion
+(defun euler->quaternion (ax ay az)
+  "convert euler angle to a quaternion"
+  (let ( (phi (* ax 0.5))
+         (the (* ay 0.5))
+         (psi (* az 0.5)) )
+    (declare (type (single-float -10.0 10.0) phi the psi))
+    (values
+      (+ (* (cos phi) (cos the) (cos psi)) (* (sin phi) (sin the) (sin psi)))
+      (- (* (sin phi) (cos the) (cos psi)) (* (cos phi) (sin the) (sin psi)))
+      (+ (* (cos phi) (sin the) (cos psi)) (* (sin phi) (cos the) (sin psi)))
+      (- (* (cos phi) (cos the) (sin psi)) (* (sin phi) (sin the) (cos psi))))))
+
 ;; *****************************************************************************
 ;; ** other functions                                                         **
 ;; *****************************************************************************

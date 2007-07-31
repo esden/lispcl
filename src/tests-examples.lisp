@@ -159,6 +159,10 @@
 (defun bp-get (&optional (index 0))
   (get-proxy *test-pc* *player-blobfinder-code* index))
 
+; get limb proxy
+(defun lip-get (&optional (index 0))
+  (get-proxy *test-pc* *player-limb-code* index))
+
 ; get laser proxy
 (defun lp-get (&optional (index 0))
   (get-proxy *test-pc* *player-laser-code* index))
