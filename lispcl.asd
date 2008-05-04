@@ -109,7 +109,7 @@
 (defmethod operation-done-p ((o compile-op) (c run-make))
   (when (string= (subseq lispcl::*lispcl-version* 0 3) "svn")
     (let ( (path (directory-namestring (component-pathname c))) )
-      #+allegro (excl:run-shell-command (vector "make" "make" "--quiet" "-C" path) :output *standard-output*)
+      #+allegro (ut:with-real-streams (excl:run-shell-command (vector "make" "make" "--quiet" "-C" path) :output *standard-output*))
       #+cmu (ext:run-program "make" (list "--quiet" "-C" path) :output *standard-output*)
       #+sbcl (sb-ext:run-program "/usr/bin/make" (list "--quiet" "-C" path) :output *standard-output*)
       #+clisp (ext:run-program "make" :arguments (list "--quiet" "-C" path))
