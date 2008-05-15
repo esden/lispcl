@@ -105,11 +105,32 @@
 ; class definition
 (defclass run-make (static-file) ())
 
+; Calling shell commands makes problems when being used within
+; the slime repl because slime uses wrapper streams.
+; The following macro provides a workaround macro to use the
+; original streams whenever slime is loaded.
+#+allegro (defmacro with-real-streams (&rest body)
+            `(labels ( (swank-streams-present-p (name)
+                         (and (find-package :swank-backend)
+                              (find-package :swank)
+                              (typep *standard-output*
+                                     (intern name "SWANK-BACKEND")))) )
+              (let ( (*standard-input* (if (swank-streams-present-p "SLIME-INPUT-STREAM")
+                                         (symbol-value (intern "*REAL-STANDARD-INPUT*" :swank))
+                                         *standard-input*))
+                     (*standard-output* (if (swank-streams-present-p "SLIME-OUTPUT-STREAM") 
+                                          (symbol-value (intern "*REAL-STANDARD-OUTPUT*" :swank))
+                                          *standard-output*))
+                     (*error-output* (if (swank-streams-present-p "SLIME-OUTPUT-STREAM") 
+                                       (symbol-value (intern "*REAL-STANDARD-OUTPUT*" :swank))
+                                       *standard-output*)) )
+                ,@body)))
+
 ; operation-done-p
 (defmethod operation-done-p ((o compile-op) (c run-make))
   (when (string= (subseq lispcl::*lispcl-version* 0 3) "svn")
     (let ( (path (directory-namestring (component-pathname c))) )
-      #+allegro (ut:with-real-streams (excl:run-shell-command (vector "make" "make" "--quiet" "-C" path) :output *standard-output*))
+      #+allegro (with-real-streams (excl:run-shell-command (vector "make" "make" "--quiet" "-C" path) :output *standard-output*))
       #+cmu (ext:run-program "make" (list "--quiet" "-C" path) :output *standard-output*)
       #+sbcl (sb-ext:run-program "/usr/bin/make" (list "--quiet" "-C" path) :output *standard-output*)
       #+clisp (ext:run-program "make" :arguments (list "--quiet" "-C" path))
