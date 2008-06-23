@@ -19,6 +19,10 @@
 
 (in-package "LISPCL")
 
+;(eval-when (:compile-toplevel :load-toplevel :execute)
+;  (export '(
+;            euler->quaternion)))
+
 ;; *****************************************************************************
 ;; * loggers                                                                   *
 ;; * =======                                                                   *

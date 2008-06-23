@@ -31,6 +31,7 @@
     "PLAYER-STANDARD-OBJECT"
     ; utiltities
     "NIL-T->0-1"
+    "EULER->QUATERNION"
     ; threads
     "WAIT-FOR-INPUT"
     ; xdr
