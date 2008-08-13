@@ -103,7 +103,7 @@
 
 ; euler->quaternion
 (defun euler->quaternion (ax ay az)
-  "convert euler angle to a quaternion"
+  "convert euler angles to a quaternion"
   (let ( (phi (* ax 0.5))
          (the (* ay 0.5))
          (psi (* az 0.5)) )
@@ -113,6 +113,64 @@
       (- (* (sin phi) (cos the) (cos psi)) (* (cos phi) (sin the) (sin psi)))
       (+ (* (cos phi) (sin the) (cos psi)) (* (sin phi) (cos the) (sin psi)))
       (- (* (cos phi) (cos the) (sin psi)) (* (sin phi) (sin the) (cos psi))))))
+
+;frame->quaternion
+(defun frame->quaternion (approach orientation)
+  "convert a frame (given by it's z- and y-vector) to a quaternion: (approach orientation) -> (qu qx qy qz)"
+  (labels ((crossproduct (ax ay az bx by bz)
+             (values
+              (- (* ay bz) (* az by))
+              (- (* az bx) (* ax bz))
+              (- (* ax by) (* ay bx))))
+           (matrix->quaternion (r11 r12 r13 r21 r22 r23 r31 r32 r33)
+             (let ((trace (+ r11 r22 r33)))
+               (cond ((> trace 0)
+                       (let ((s (/ 0.5 (sqrt (+ 1.0 trace)))))
+                        (values
+                         (/ 0.25 s)
+                         (* (- r32 r23) s)
+                         (* (- r13 r31) s)
+                         (* (- r21 r12) s))))
+                     ((and (> r11 r22) (> r11 r33))
+                       (let ((s (/ 0.5 (sqrt (- (+ 1.0 r11) r22 r33)))))
+                         (values
+                          (* (- r32 r23) s)
+                          (/ 0.25 s)
+                          (* (+ r12 r21) s)
+                          (* (+ r13 r31) s))))
+                     ((> r22 r33)
+                      (let ((s (/ 0.5 (sqrt (- (+ 1.0 r22) r11 r33)))))
+                        (values
+                         (* (- r13 r31) s)
+                         (* (+ r12 r21) s)
+                         (/ 0.25 s)
+                         (* (+ r23 r32) s))))
+                     (t
+                      (let ((s (/ 0.5 (sqrt (- (+ 1.0 r33) r11 r22)))))
+                        (values
+                         (* (- r21 r12) s)
+                         (* (+ r13 r31) s)
+                         (* (+ r23 r32) s)
+                         (/ 0.25 s))))))))        
+    (let ((ax (player-px approach))
+          (ay (player-py approach))
+          (az (player-pz approach))
+          (ox (player-px orientation))
+          (oy (player-py orientation))
+          (oz (player-pz orientation)))
+      (multiple-value-bind (nx ny nz) (crossproduct ox oy oz ax ay az)
+        (matrix->quaternion nx ox ax ny oy ay nz oz az)))))
+
+;quaternion->frame
+(defun quaternion->frame (qu qx qy qz)
+  (values
+   (make-instance 'player-point-3d :px (* 2 (+ (* qx qz) (* qu qy)))
+                                   :py (* 2 (- (* qy qz) (* qu qx)))
+                                   :pz (- (+ (* qu qu) (* qz qz)) (* qx qx) (* qy qy)))
+   (make-instance 'player-point-3d :px (* 2 (- (* qx qy) (* qu qz)))
+                                   :py (- (+ (* qu qu) (* qy qy)) (* qx qx) (* qz qz))
+                                   :pz (* 2 (+ (* qy qz) (* qu qx))))))
+
 
 ;; *****************************************************************************
 ;; ** other functions                                                         **

@@ -48,8 +48,9 @@
     (defmethod set-pose ((lp limb-proxy) &key (x 0.0) (y 0.0) (z 0.0)
                                               (qu 0.0) (qx 0.0) (qy 0.0) (qz 0.0)
                                               &allow-other-keys)
-      (multiple-value-bind (ax ay az) (quaternion->euler qu qx qy qz)
-        (set-pose-pao lp :px x :py y :pz z :ox ax :oy ay :oz az)))
+      (multiple-value-bind (app ori) (quaternion->frame qu qx qy qz)
+        (set-pose-pao lp :px x :py y :pz z :ax (player-px app) :ay (player-py app) :az (player-pz app)
+                                           :ox (player-px ori) :oy (player-py ori) :oz (player-pz ori))))
 
     ;; ** set pose euler                                                        **
     (defmethod set-pose-euler ((lp limb-proxy) &key (x 0.0) (y 0.0) (z 0.0)
