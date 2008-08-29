@@ -32,6 +32,7 @@
     ; utiltities
     "NIL-T->0-1"
     "EULER->QUATERNION"
+	"FRAME->QUATERNION"
     ; threads
     "WAIT-FOR-INPUT"
     ; xdr
